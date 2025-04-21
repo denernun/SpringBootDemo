@@ -1,5 +1,6 @@
 package spring.boot.projetos.demo.service;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -8,6 +9,7 @@ import org.springframework.stereotype.Service;
 
 import spring.boot.projetos.demo.dto.ClienteDTO;
 import spring.boot.projetos.demo.dto.ClienteResponseDTO;
+import spring.boot.projetos.demo.dto.ClienteTelefoneDTO;
 import spring.boot.projetos.demo.dto.ClienteTelefoneResponseDTO;
 import spring.boot.projetos.demo.model.Cliente;
 import spring.boot.projetos.demo.model.ClienteTelefone;
@@ -57,15 +59,24 @@ public class ClienteService {
         Cliente cliente = clientesRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Cliente não encontrado"));
         cliente.setNome(clienteDTO.getNome());
-        if (clienteDTO.getTelefones() != null && clienteDTO.getTelefones().size() > 0) {
-            List<ClienteTelefone> telefones = clienteDTO.getTelefones().stream()
-                    .map(telefoneDTO -> {
-                        ClienteTelefone telefone = new ClienteTelefone();
-                        telefone.setNumero(telefoneDTO.getNumero());
-                        telefone.setCliente(cliente);
-                        return telefone;
-                    }).collect(Collectors.toList());
-            cliente.setTelefones(telefones);
+        if (clienteDTO.getTelefones() != null) {
+            List<ClienteTelefone> updatedPhones = new ArrayList<>();
+            for (ClienteTelefoneDTO telefoneDTO : clienteDTO.getTelefones()) {
+                ClienteTelefone telefone;
+                if (telefoneDTO.getId() != null) {
+                    telefone = cliente.getTelefones().stream()
+                            .filter(t -> t.getId().equals(telefoneDTO.getId()))
+                            .findFirst()
+                            .orElseGet(() -> new ClienteTelefone());
+                } else {
+                    telefone = new ClienteTelefone();
+                }
+                telefone.setNumero(telefoneDTO.getNumero());
+                telefone.setCliente(cliente);
+                updatedPhones.add(telefone);
+            }
+            cliente.getTelefones().clear();
+            cliente.getTelefones().addAll(updatedPhones);
         }
         return clientesRepository.save(cliente);
     }

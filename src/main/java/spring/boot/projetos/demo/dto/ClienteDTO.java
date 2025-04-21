@@ -1,11 +1,12 @@
 package spring.boot.projetos.demo.dto;
 
+import java.util.List;
+
+import jakarta.validation.constraints.NotEmpty;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-
-import java.util.List;
 
 @Getter
 @Setter
@@ -13,7 +14,9 @@ import java.util.List;
 @AllArgsConstructor
 public class ClienteDTO {
 
+    @NotEmpty
     private String nome;
+
     private List<ClienteTelefoneDTO> telefones;
 
 }
