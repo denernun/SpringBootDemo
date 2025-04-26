@@ -37,7 +37,9 @@ public class ClienteController {
     private Cliente create(@Valid @RequestBody ClienteDTO clienteDTO, BindingResult result) {
         if (result.hasErrors()) {
             Map<String, String> errors = new HashMap<>();
-            result.getFieldErrors().forEach(error -> errors.put(error.getField(), error.getDefaultMessage()));
+            result.getFieldErrors().forEach(error -> {
+                errors.put(error.getField(), error.getDefaultMessage());
+            });
             throw new RuntimeException("Erro de validação: " + errors);
         }
         return clientesService.create(clienteDTO);

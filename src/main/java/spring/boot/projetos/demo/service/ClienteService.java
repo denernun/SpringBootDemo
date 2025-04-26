@@ -65,9 +65,11 @@ public class ClienteService {
                 ClienteTelefone telefone;
                 if (telefoneDTO.getId() != null) {
                     telefone = cliente.getTelefones().stream()
-                            .filter(t -> t.getId().equals(telefoneDTO.getId()))
+                            .filter(t -> {
+                                return t.getId().equals(telefoneDTO.getId());
+                            })
                             .findFirst()
-                            .orElseGet(() -> new ClienteTelefone());
+                            .orElseGet(ClienteTelefone::new);
                 } else {
                     telefone = new ClienteTelefone();
                 }
