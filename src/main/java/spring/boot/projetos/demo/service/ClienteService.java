@@ -60,14 +60,12 @@ public class ClienteService {
                 .orElseThrow(() -> new RuntimeException("Cliente não encontrado"));
         cliente.setNome(clienteDTO.getNome());
         if (clienteDTO.getTelefones() != null) {
-            List<ClienteTelefone> updatedPhones = new ArrayList<>();
+            List<ClienteTelefone> clienteTelefones = new ArrayList<>();
             for (ClienteTelefoneDTO telefoneDTO : clienteDTO.getTelefones()) {
                 ClienteTelefone telefone;
                 if (telefoneDTO.getId() != null) {
                     telefone = cliente.getTelefones().stream()
-                            .filter(t -> {
-                                return t.getId().equals(telefoneDTO.getId());
-                            })
+                            .filter(t -> t.getId().equals(telefoneDTO.getId()))
                             .findFirst()
                             .orElseGet(ClienteTelefone::new);
                 } else {
@@ -75,10 +73,10 @@ public class ClienteService {
                 }
                 telefone.setNumero(telefoneDTO.getNumero());
                 telefone.setCliente(cliente);
-                updatedPhones.add(telefone);
+                clienteTelefones.add(telefone);
             }
             cliente.getTelefones().clear();
-            cliente.getTelefones().addAll(updatedPhones);
+            cliente.getTelefones().addAll(clienteTelefones);
         }
         return clientesRepository.save(cliente);
     }

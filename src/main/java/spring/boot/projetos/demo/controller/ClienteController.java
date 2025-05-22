@@ -5,6 +5,9 @@ import java.util.List;
 import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.HttpStatusCode;
+import org.springframework.http.ResponseEntity;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -29,20 +32,20 @@ public class ClienteController {
     private ClienteService clientesService;
 
     @GetMapping()
-    public List<ClienteResponseDTO> getAll() {
-        return clientesService.getAll();
+    private List<ClienteResponseDTO> getAll() {
+        List<ClienteResponseDTO> clientes = clientesService.getAll();
+        return ResponseEntity.status(HttpStatus.OK).body(clientes).getBody();
     }
 
     @PostMapping
-    private Cliente create(@Valid @RequestBody ClienteDTO clienteDTO, BindingResult result) {
+    private ResponseEntity<Cliente> create(@Valid @RequestBody ClienteDTO clienteDTO, BindingResult result) {
         if (result.hasErrors()) {
             Map<String, String> errors = new HashMap<>();
-            result.getFieldErrors().forEach(error -> {
-                errors.put(error.getField(), error.getDefaultMessage());
-            });
+            result.getFieldErrors().forEach(error -> errors.put(error.getField(), error.getDefaultMessage()));
             throw new RuntimeException("Erro de validação: " + errors);
         }
-        return clientesService.create(clienteDTO);
+        Cliente cliente = clientesService.create(clienteDTO);
+        return ResponseEntity.status(HttpStatus.CREATED).body(cliente);
     }
 
     @PatchMapping("/{id}")
